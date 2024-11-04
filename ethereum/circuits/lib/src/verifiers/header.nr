@@ -13,11 +13,11 @@ global TRANSACTIONS_ROOT_INDEX = 4;
 global RECEIPTS_ROOT_INDEX = 5;
 global BLOCK_NUM_INDEX = 8;
 
-global LONDON_BLOCK_NUM: u64 = 12_965_000;
-global PARIS_BLOCK_NUM: u64 = 15_537_394;
-global CANCUN_BLOCK_NUM: u64 = 19_426_587;
+global LONDON_BLOCK_NUM: u32 = 12_965_000;
+global PARIS_BLOCK_NUM: u32 = 15_537_394;
+global CANCUN_BLOCK_NUM: u32 = 19_426_587;
 
-pub(crate) fn get_header_fields_count(chain_id: Field, block_number: u64) -> u64 {
+pub(crate) fn get_header_fields_count(chain_id: Field, block_number: u32) -> u32 {
     let mut fields_count = 15;
     if chain_id == ETHEREUM_MAINNET_ID {
         if block_number >= LONDON_BLOCK_NUM {

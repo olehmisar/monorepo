@@ -4,13 +4,13 @@ use crate::fixtures::mainnet::paris::usdc_circle::{header::{number, hash}, accou
 use crate::chain::ETHEREUM_MAINNET_ID;
 use crate::misc::types::{Bytes32, Address};
 use dep::std::test::OracleMock;
-use dep::std::unsafe::zeroed;
+use dep::std::mem::zeroed;
 
 #[test]
 fn success() {
     let result = StorageWithinBlock { block_hash: hash, account, values };
     // This is not a correct proof but it passes because nargo does not verify it. Nargo thinks that it's bb's job, but doesn't call bb.
-    let recursive_proof: RecursiveProof = zeroed();
+    let recursive_proof: RecursiveProof = std::mem::zeroed();
 
     let _ = OracleMock::mock("get_storage_recursive").returns((result.serialize(), recursive_proof));
 

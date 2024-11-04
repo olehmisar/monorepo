@@ -1,9 +1,9 @@
 import { GetBlockReturnType } from 'viem';
-import { encodeHexString, joinArray } from '../../noir/noir_js/encode.js';
 import { blockToHeader, headerToRlp } from '../../ethereum/blockHeader.js';
-import { padArray } from '../../util/array.js';
-import { MAX_HEADER_RLP_LEN } from '../../noir/oracles/rpc/headerOracle/encode.js';
+import { encodeHexString, joinArray } from '../../noir/noir_js/encode.js';
 import { ZERO_PAD_VALUE } from '../../noir/oracles/common/const.js';
+import { MAX_HEADER_RLP_LEN } from '../../noir/oracles/rpc/headerOracle/encode.js';
+import { padArray } from '../../util/array.js';
 
 export function createHeaderFixture(block: GetBlockReturnType): string {
   const blockHash = encodeHexString(block.hash);
@@ -24,7 +24,7 @@ global state_root = ${joinArray(stateRoot)};
 global transactions_root = ${joinArray(transactionsRoot)};
 global receipts_root = ${joinArray(receiptsRoot)};
 
-global encoded_length: u64 = ${headerHexArray.length};
+global encoded_length: u32 = ${headerHexArray.length};
 global encoded_data: [u8; ${MAX_HEADER_RLP_LEN}] = ${joinArray(headerData)};
 
 global block_header_partial = BlockHeaderPartial { number, hash, state_root, transactions_root, receipts_root };

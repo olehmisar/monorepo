@@ -9,15 +9,15 @@ use crate::rlp::decode::decode_string;
 
 use dep::std::hash::keccak256;
 
-global MAX_KEY_LEN = 32;
-global MAX_PREFIXED_KEY_NIBBLE_LEN = 66; // (MAX_KEY_LEN + 1) * 2
+global MAX_KEY_LEN: u32 = 32;
+global MAX_PREFIXED_KEY_NIBBLE_LEN: u32 = 66; // (MAX_KEY_LEN + 1) * 2
 global MAX_STORAGE_DEPTH_NO_LEAF_M = 6; // Emperically correct values to be determined after we scan ethereum state trie.
 
-global MAX_STORAGE_VALUE_LEN = 32; // Values taken from storageProofConfig in storage.ts.
-global MAX_STORAGE_LEAF_LEN = 69;
+global MAX_STORAGE_VALUE_LEN: u32 = 32; // Values taken from storageProofConfig in storage.ts.
+global MAX_STORAGE_LEAF_LEN: u32 = 69;
 
 struct Account {
-    nonce: u64,
+    nonce: u32,
     balance: Field,
     storage_root: Bytes32,
     code_hash: Bytes32,
@@ -37,13 +37,13 @@ struct StateAndStorageProofInput {
     storage_proof_input: ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_STORAGE_VALUE_LEN, MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORAGE_LEAF_LEN>
 }
 
-struct StorageWithinBlock<N> {
+struct StorageWithinBlock<let N: u32> {
     block_hash: Bytes32,
     account: Account,
     values: [Bytes32; N],
 }
 
-type ProofInputSerialized<LEN> = [Field; LEN];
+type ProofInputSerialized<let LEN: u32> = [Field; LEN];
 
 impl Eq for StorageWithinBlock<1> {
     fn eq(self, other: Self) -> bool {
@@ -89,7 +89,7 @@ fn get_storage_value(rlp_encoded_value: [u8; MAX_STORAGE_VALUE_LEN]) -> [u8; MAX
 
 pub fn get_account_with_storage(
     chain_id: Field,
-    block_number: u64,
+    block_number: u32,
     address: Address,
     storage_key: Bytes32
 ) -> StorageWithinBlock<1> {
@@ -105,16 +105,16 @@ pub fn get_account_with_storage(
 }
 
 #[oracle(get_proof)]
-unconstrained fn get_proof_oracle<STATE_PROOF_INPUT_LEN, STORAGE_PROOF_INPUT>(
+unconstrained fn get_proof_oracle<let STATE_PROOF_INPUT_LEN: u32, let STORAGE_PROOF_INPUT: u32>(
     _chain_id: Field,
-    _block_no: u64,
+    _block_no: u32,
     _address: Address,
     _storage_key: Bytes32
 ) -> (Account, ProofInputSerialized<STATE_PROOF_INPUT_LEN>, ProofInputSerialized<STORAGE_PROOF_INPUT>) {}
 
 unconstrained fn get_proof_unconstrained(
     chain_id: Field,
-    block_no: u64,
+    block_no: u32,
     address: Address,
     storage_key: Bytes32
 ) -> StateAndStorageProofInput {

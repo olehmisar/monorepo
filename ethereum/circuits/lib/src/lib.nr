@@ -26,4 +26,4 @@ mod verifiers;
 mod merkle_patricia_proofs;
 mod rlp;
 
-global HASH_LEN = 32;
+global HASH_LEN: u32 = 32;

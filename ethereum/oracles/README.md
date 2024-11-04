@@ -17,7 +17,7 @@ fn get_header_oracle(chain_id: Field, block_no: Field) -> (BlockHeaderPartial, B
 fn get_account_oracle(chain_id: Field, block_no: Field, address: Address) -> AccountWithStateProof;
 fn get_proof_oracle(chain_id: Field, block_no: Field, address: Address, storage_key: Bytes32) -> StateAndStorageProof;
 fn get_receipt_oracle(chain_id: Field, block_no: Field, tx_idx: Field) -> (TxType, TxReceipt, TxReceiptProof);
-fn get_transaction_oracle(chain_id: Field, block_number: u64, tx_idx: Field) -> (TxType, Transaction, TransactionProof);
+fn get_transaction_oracle(chain_id: Field, block_number: u32, tx_idx: Field) -> (TxType, Transaction, TransactionProof);
 
 ```
 

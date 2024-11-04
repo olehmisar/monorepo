@@ -3,13 +3,13 @@ use crate::header::get_header;
 use crate::verifiers::{receipt::verify_receipt, tx_helpers::split::split_into_tx_type_and_rlp};
 use crate::merkle_patricia_proofs::proof::{Proof, ProofInput};
 use crate::serde::Serde;
-use dep::std::unsafe::zeroed;
+use dep::std::mem::zeroed;
 
-global BLOOM_FILTER_LEN: u64 = 256;
+global BLOOM_FILTER_LEN: u32 = 256;
 
-global MAX_KEY_LEN = 3;
+global MAX_KEY_LEN: u32 = 3;
 global MAX_DEPTH_NO_LEAF = 6;
-global MAX_PREFIXED_KEY_NIBBLE_LEN = 8; // (MAX_KEY_LEN + 1) * 2
+global MAX_PREFIXED_KEY_NIBBLE_LEN: u32 = 8; // (MAX_KEY_LEN + 1) * 2
 
 global MAX_VALUE_LEN_M = 1000; // Values taken from receiptProofConfigM in receipt.ts.
 global MAX_LEAF_LEN_M = 1011;
@@ -59,9 +59,9 @@ impl From<ForeignCallTxReceiptPartial> for TxReceiptPartial {
 impl From<TxReceiptPartial> for ForeignCallTxReceiptPartial {
     fn from(receipt: TxReceiptPartial) -> Self {
         ForeignCallTxReceiptPartial {
-            status: receipt.status.unwrap_or(zeroed()),
+            status: receipt.status.unwrap_or(std::mem::zeroed()),
             status_is_some: receipt.status.is_some(),
-            state_root: receipt.state_root.unwrap_or(zeroed()),
+            state_root: receipt.state_root.unwrap_or(std::mem::zeroed()),
             state_root_is_some: receipt.state_root.is_some(),
             cumulative_gas_used: receipt.cumulative_gas_used,
             logs_bloom: receipt.logs_bloom
@@ -76,7 +76,7 @@ struct TxReceiptWithinBlock {
     block_hash: Bytes32
 }
 
-pub fn get_receipt(chain_id: Field, block_number: u64, tx_idx: Field) -> TxReceiptWithinBlock {
+pub fn get_receipt(chain_id: Field, block_number: u32, tx_idx: Field) -> TxReceiptWithinBlock {
     let (tx_type, receipt, proof_input) = get_receipt_unconstrained_M(chain_id, block_number, tx_idx);
     let header = get_header(chain_id, block_number);
     verify_receipt(
@@ -93,13 +93,13 @@ pub fn get_receipt(chain_id: Field, block_number: u64, tx_idx: Field) -> TxRecei
 #[oracle(get_receipt)]
 unconstrained fn get_receipt_oracle<let PROOF_INPUT_LEN: u32>(
     _chain_id: Field,
-    _block_number: u64,
+    _block_number: u32,
     _tx_idx: Field
 ) -> (TxType, ForeignCallTxReceiptPartial, ProofInputSerialized<PROOF_INPUT_LEN>) {}
 
 unconstrained pub(crate) fn get_receipt_unconstrained_M(
     chain_id: Field,
-    block_number: u64,
+    block_number: u32,
     tx_idx: Field
 ) -> (TxType, TxReceiptPartial, ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN_M, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN_M>) {
     let (tx_type, receipt, proof_input) = get_receipt_oracle(chain_id, block_number, tx_idx);

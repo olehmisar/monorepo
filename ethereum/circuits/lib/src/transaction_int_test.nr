@@ -20,7 +20,7 @@ use crate::fixtures::mainnet::{
 use dep::std::test::OracleMock;
 use crate::chain::ETHEREUM_MAINNET_ID;
 
-global MAX_DATA_LEN = 1000;
+global MAX_DATA_LEN: u32 = 1000;
 
 #[test]
 fn get_transaction_success() {
@@ -56,7 +56,7 @@ fn get_transaction_wrong_transaction() {
     let _ = OracleMock::mock("get_header").returns((block_header_partial, block_header_rlp));
     let _ = OracleMock::mock("get_transaction").returns((another_tx_type, another_foreign_call_transaction, another_proof_input_serialized));
 
-    let _: TransactionWithinBlock<MAX_DATA_LEN> = get_transaction(ETHEREUM_MAINNET_ID, number, another_tx_idx);
+    let _: TransactionWithinBlock<MAX_DATA_LEN> = get_transaction(ETHEREUM_MAINNET_ID, number, another_tx_idx as Field);
 }
 
 #[test(should_fail_with = "Invalid node hash")]

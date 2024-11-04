@@ -42,9 +42,9 @@ decode_list(Fragment::from_array(rlp));
 
 ```Rust
 struct RlpFragment {
-    offset: u64,
-    length: u64,
-    data_type: u64 // 0 for STRING, 1 for LIST
+    offset: u32,
+    length: u32,
+    data_type: u32 // 0 for STRING, 1 for LIST
 }
 ```
 

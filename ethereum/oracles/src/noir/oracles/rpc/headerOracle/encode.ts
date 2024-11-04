@@ -4,7 +4,7 @@ import { BlockHeader, headerToRlp } from '../../../../ethereum/blockHeader.js';
 import { padArray } from '../../../../util/array.js';
 import { encodeField, encodeHex } from '../../common/encode.js';
 
-export const MAX_HEADER_RLP_LEN = 708;
+export const MAX_HEADER_RLP_LEN: u32 = 708;
 
 export function encodeBlockHeader(header: BlockHeader): ForeignCallOutput[] {
   return [...encodeBlockHeaderPartial(header), ...encodeBlockHeaderRlp(header)];

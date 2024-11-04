@@ -19,7 +19,7 @@ pub(crate) fn assert_account_equals(account_rlp_left_padded: [u8; MAX_ACCOUNT_ST
     assert(account_rlp_list.len == ACCOUNT_FIELDS_COUNT, "Invalid number of fields in account RLP");
 
     let account_rlp = Fragment::from_array(account_rlp_right_padded);
-    account_rlp_list.get(NONCE_INDEX).assert_eq_u64("Nonce", account_rlp, account.nonce as u64);
+    account_rlp_list.get(NONCE_INDEX).assert_eq_u64("Nonce", account_rlp, account.nonce);
     account_rlp_list.get(BALANCE_INDEX).assert_eq_u128("Balance", account_rlp, U128::from_integer(account.balance));
 
     account_rlp_list.get(STORAGE_ROOT_INDEX).assert_eq_bytes32("Storage root", account_rlp, account.storage_root);

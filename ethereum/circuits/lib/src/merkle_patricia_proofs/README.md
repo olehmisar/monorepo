@@ -29,7 +29,7 @@ pub fn verify_merkle_proof<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH
 type Key<MAX_PREFIXED_KEY_NIBBLE_LEN> = [u8; MAX_PREFIXED_KEY_NIBBLE_LEN];
 ```
 
-**Note:** the key must be left-padded to `MAX_PREFIXED_KEY_NIBBLE_LEN` which is `(MAX_KEY_LEN + 1) * 2` (prefixed key length in nibbles). This is needed because this value is used underneath for computation. So, when one decides on `MAX_KEY_LEN`, they need to pass a key in bytes that is left-padded to `MAX_PREFIXED_KEY_NIBBLE_LEN = (MAX_KEY_LEN + 1) * 2`.
+**Note:** the key must be left-padded to `MAX_PREFIXED_KEY_NIBBLE_LEN` which is `(MAX_KEY_LEN + 1) * 2` (prefixed key length in nibbles). This is needed because this value is used underneath for computation. So, when one decides on `MAX_KEY_LEN`, they need to pass a key in bytes that is left-padded to `MAX_PREFIXED_KEY_NIBBLE_LEN: u32 = (MAX_KEY_LEN + 1) * 2`.
 
 **Note:** This library does not support keys longer than 495 bytes (`MAX_KEY_LEN <= 495`).
 
@@ -57,11 +57,11 @@ type Hash = [u8; 32];
 struct Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
 	nodes: [Node; MAX_DEPTH_NO_LEAF],
 	leaf: Leaf<MAX_LEAF_LEN>,
-	depth: u64
+	depth: u32
 }
 ```
 
-`Proof` consists of: the nodes except for the leaf node, the leaf node and the depth. A `Node` is an array of bytes of maximum length `MAX_NODE_LEN = 532`. The leaf however can have arbitrary length as it contains a value of arbitrary length. That's why it is separated from the rest of the nodes. A `Leaf` is an array of bytes of maximum length `MAX_LEAF_LEN`.
+`Proof` consists of: the nodes except for the leaf node, the leaf node and the depth. A `Node` is an array of bytes of maximum length `MAX_NODE_LEN: u32 = 532`. The leaf however can have arbitrary length as it contains a value of arbitrary length. That's why it is separated from the rest of the nodes. A `Leaf` is an array of bytes of maximum length `MAX_LEAF_LEN`.
 
 **Why is the maximum length of a node equal to 532?**
 A node is an RLP-encoded branch or extension node which means that apart from the data it holds, it additionally consists of RLP headers. If a node is a branch node, in a maximum case, it consists of 16 32-bit hashes and an empty string. When RLP headers are taken into account, the maximum length of a branch node is `3 + (16 * (1 + 32) + 1) = 532`.

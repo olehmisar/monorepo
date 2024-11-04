@@ -6,44 +6,44 @@ use crate::misc::{
 };
 use dep::std::hash::keccak256;
 
-global MAX_NODE_LEN = 532;
-global MAX_NODE_FIELDS = 17;
-global BRANCH_NODE_NUM_FIELDS = 17;
-global EXTENSION_NODE_NUM_FIELDS = 2;
-global EVEN = 0;
-global ODD = 1;
+global MAX_NODE_LEN: u32 = 532;
+global MAX_NODE_FIELDS: u32 = 17;
+global BRANCH_NODE_NUM_FIELDS: u32 = 17;
+global EXTENSION_NODE_NUM_FIELDS: u32 = 2;
+global EVEN: u32 = 0;
+global ODD: u32 = 1;
 
 type Node = [u8; MAX_NODE_LEN];
-type Leaf<MAX_LEAF_LEN> = [u8; MAX_LEAF_LEN];
-type Key<MAX_PREFIXED_KEY_NIBBLE_LEN> = [u8; MAX_PREFIXED_KEY_NIBBLE_LEN];
-type Value<MAX_VALUE_LEN> = [u8; MAX_VALUE_LEN];
+type Leaf<let MAX_LEAF_LEN: u32> = [u8; MAX_LEAF_LEN];
+type Key<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32> = [u8; MAX_PREFIXED_KEY_NIBBLE_LEN];
+type Value<let MAX_VALUE_LEN: u32> = [u8; MAX_VALUE_LEN];
 
-struct Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
+struct Proof<let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> {
 	nodes: [Node; MAX_DEPTH_NO_LEAF],
     // Leaf has a different max length than internal node as it contains the value of arbitrary length.
 	leaf: Leaf<MAX_LEAF_LEN>,
-	depth: u64
+	depth: u32
 }
 
-struct ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
+struct ProofInput<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32, let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> {
     key: Key<MAX_PREFIXED_KEY_NIBBLE_LEN>,
     value: Value<MAX_VALUE_LEN>,
     proof: Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN>
 }
 
-impl<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> Eq for Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
+impl<let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> Eq for Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
     fn eq(self, other: Self) -> bool {
         (self.depth == other.depth) & (self.nodes == other.nodes) & (self.leaf == other.leaf)
     }
 }
 
-impl<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> Eq for ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
+impl<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32, let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> Eq for ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
     fn eq(self, other: Self) -> bool {
         (self.key == other.key) & (self.value == other.value) & (self.proof == other.proof)
     }
 }
 
-pub fn get_node_len<MAX_LEN>(node: [u8; MAX_LEN]) -> u64 {
+pub fn get_node_len<let MAX_LEN: u32>(node: [u8; MAX_LEN]) -> u32 {
     let node_rlp_header = decode_to_rlp_header(Fragment::from_array(node));
     let node_unpadded_len = node_rlp_header.offset + node_rlp_header.length;
     assert(node_unpadded_len <= MAX_LEN, "Node RLP length exceeds MAX_LEN");
@@ -56,9 +56,9 @@ pub fn get_node_len<MAX_LEN>(node: [u8; MAX_LEN]) -> u64 {
 // 1 - Extension node, odd number of nibbles
 // 2 - Leaf node, even number of nibbles
 // 3 - Leaf node, odd number of nibbles
-pub fn parity(prefix: u8) -> u64 {
+pub fn parity(prefix: u8) -> u32 {
     assert(prefix < 4, "Prefix must be 0, 1, 2 or 3");
-    (prefix % 2) as u64
+    (prefix % 2) as u32
 }
 
 // Leaf and extension nodes are RLP lists with 2 elements: prefixed key nibbles (in bytes) and value.
@@ -79,9 +79,9 @@ pub fn extract_hash_from_branch_node<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     node_rlp_list: RlpList<MAX_NODE_FIELDS>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
-    key_ptr: &mut u64
+    key_ptr: &mut u32
 ) -> Fragment<HASH_LEN, u8> {
-    let curr_nibble = key_nibbles.at(*key_ptr) as u64;
+    let curr_nibble = key_nibbles.at(*key_ptr) as u32;
     assert(
         node_rlp_list.get(curr_nibble).length == HASH_LEN, "Expected a hash at position given by the key nibble"
     );
@@ -94,7 +94,7 @@ pub fn extract_hash_from_extension_node<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     node_rlp_list: RlpList<MAX_NODE_FIELDS>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
-    key_ptr: &mut u64
+    key_ptr: &mut u32
 ) -> Fragment<HASH_LEN, u8> {
     let prefixed_extension_key_part: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8> = Fragment::new(node_rlp_list.get(0).offset, node_rlp_list.get(0).length, node).focus();
 
@@ -114,7 +114,7 @@ pub fn extract_hash_from_extension_node<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
 pub fn extract_hash<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
-    key_ptr: &mut u64
+    key_ptr: &mut u32
 ) -> Fragment<HASH_LEN, u8> {
     let mut hash = Fragment::from_array([0; HASH_LEN]);
     let node_rlp_list: RlpList<MAX_NODE_FIELDS> = decode_list_of_small_strings(Fragment::from_array(node));
@@ -137,7 +137,7 @@ pub fn verify_node_hash<let MAX_LEN: u32>(node: [u8; MAX_LEN], hash: [u8; HASH_L
 pub fn verify_leaf<let MAX_LEAF_LEN: u32, let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32>(
     leaf: Leaf<MAX_LEAF_LEN>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
-    key_ptr: &mut u64,
+    key_ptr: &mut u32,
     value: Value<MAX_VALUE_LEN>
 ) {
     let leaf_rlp_list: RlpList<2> = decode_list(Fragment::from_array(leaf));

@@ -11,12 +11,12 @@ use crate::merkle_patricia_proofs::proof::{ProofInput, verify_merkle_proof};
 
 global BYZANTIUM_BLOCK_NUM = 4_370_000;
 
-pub(crate) fn is_pre_byzantium(block_number: u64) -> bool {
-    block_number < BYZANTIUM_BLOCK_NUM as u64
+pub(crate) fn is_pre_byzantium(block_number: u32) -> bool {
+    block_number < BYZANTIUM_BLOCK_NUM
 }
 
 pub(crate) fn assert_receipt_equals<let MAX_ENCODED_LEN: u32>(
-    block_number: u64,
+    block_number: u32,
     tx_type: TxType,
     encoded_receipt: Fragment<MAX_ENCODED_LEN, u8>,
     receipt: TxReceiptPartial
@@ -30,7 +30,7 @@ pub(crate) fn assert_receipt_equals<let MAX_ENCODED_LEN: u32>(
 }
 
 pub fn verify_receipt<let MAX_ENCODED_LEN: u32, let MAX_LEAF_LEN: u32>(
-    block_number: u64,
+    block_number: u32,
     tx_idx: Field,
     tx_type: TxType,
     receipt: TxReceiptPartial,

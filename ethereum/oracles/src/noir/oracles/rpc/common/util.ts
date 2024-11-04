@@ -1,6 +1,6 @@
 import { BYTE_HEX_LEN } from '../../../../util/const.js';
 
-export const RLP_SHORT_ENTITY_MAX_LEN = 55;
+export const RLP_SHORT_ENTITY_MAX_LEN: u32 = 55;
 
 export function getMaxRlpHeaderSize(len: number): number {
   if (len <= RLP_SHORT_ENTITY_MAX_LEN) {

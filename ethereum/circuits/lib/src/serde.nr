@@ -16,14 +16,14 @@ use crate::account_with_storage::{
 use crate::misc::{fragment::Fragment, types::{BYTES32_LENGTH, Bytes32, ADDRESS_LENGTH, Address}};
 use crate::uint256::U256;
 use crate::merkle_patricia_proofs::proof::{ProofInput, Proof, Node, MAX_NODE_LEN};
-use dep::std::unsafe::zeroed;
+use dep::std::mem::zeroed;
 
 trait Serde<let LEN: u32> {
     fn serialize(self) -> [Field; LEN];
     fn deserialize(data: [Field; LEN]) -> Self;
 }
 
-global U128_SERIALIZED_LEN = 2;
+global U128_SERIALIZED_LEN: u32 = 2;
 
 impl Serde<U128_SERIALIZED_LEN> for U128 {
     fn serialize(self) -> [Field; U128_SERIALIZED_LEN] {
@@ -35,7 +35,7 @@ impl Serde<U128_SERIALIZED_LEN> for U128 {
     }
 }
 
-global U256_SERIALIZED_LEN = 4;
+global U256_SERIALIZED_LEN: u32 = 4;
 
 impl Serde<U256_SERIALIZED_LEN> for U256 {
     fn serialize(self) -> [Field; U256_SERIALIZED_LEN] {
@@ -57,7 +57,7 @@ impl<let LEN: u32> Serde<LEN> for [u8; LEN] {
     }
 }
 
-global ACCOUNT_LEN = 1 + 1 + BYTES32_LENGTH + BYTES32_LENGTH;
+global ACCOUNT_LEN: u32 = 1 + 1 + BYTES32_LENGTH + BYTES32_LENGTH;
 
 impl Serde<ACCOUNT_LEN> for Account {
     fn serialize(self) -> [Field; ACCOUNT_LEN] {
@@ -71,7 +71,7 @@ impl Serde<ACCOUNT_LEN> for Account {
 
     fn deserialize(data: [Field; ACCOUNT_LEN]) -> Self {
         let mut fragment = Fragment::from_array(data);
-        let nonce = fragment.pop_front() as u64;
+        let nonce = fragment.pop_front() as u32;
         let balance = fragment.pop_front();
         let storage_root = fragment.pop_front_array().deserialize();
         let code_hash = fragment.pop_front_array().deserialize();
@@ -84,7 +84,7 @@ impl Serde<ACCOUNT_LEN> for Account {
     }
 }
 
-global ACCOUNT_BLOCK_LEN = ACCOUNT_LEN + BYTES32_LENGTH;
+global ACCOUNT_BLOCK_LEN: u32 = ACCOUNT_LEN + BYTES32_LENGTH;
 
 impl Serde<ACCOUNT_BLOCK_LEN> for AccountWithinBlock {
     fn serialize(self) -> [Field; ACCOUNT_BLOCK_LEN] {
@@ -105,7 +105,7 @@ impl Serde<ACCOUNT_BLOCK_LEN> for AccountWithinBlock {
     }
 }
 
-global STORAGE_BLOCK_LEN = BYTES32_LENGTH + ACCOUNT_LEN + BYTES32_LENGTH;
+global STORAGE_BLOCK_LEN: u32 = BYTES32_LENGTH + ACCOUNT_LEN + BYTES32_LENGTH;
 
 impl Serde<STORAGE_BLOCK_LEN> for StorageWithinBlock<1> {
     fn serialize(self) -> [Field; STORAGE_BLOCK_LEN] {
@@ -166,7 +166,7 @@ impl Serde<STATE_PROOF_LEN_M> for Proof<MAX_ACCOUNT_DEPTH_NO_LEAF_M, MAX_ACCOUNT
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; MAX_ACCOUNT_DEPTH_NO_LEAF_M] = deserialize_state_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u64;
+        let depth = fragment.pop_front() as u32;
         Proof {
             nodes,
             leaf,
@@ -175,7 +175,7 @@ impl Serde<STATE_PROOF_LEN_M> for Proof<MAX_ACCOUNT_DEPTH_NO_LEAF_M, MAX_ACCOUNT
     }
 }
 
-global STATE_PROOF_INPUT_LEN_M = 5645; // ACCOUNT_MAX_PREFIXED_KEY_NIBBLE_LEN + MAX_ACCOUNT_STATE_LEN + STATE_PROOF_LEN_M
+global STATE_PROOF_INPUT_LEN_M: u32 = 5645; // ACCOUNT_MAX_PREFIXED_KEY_NIBBLE_LEN + MAX_ACCOUNT_STATE_LEN + STATE_PROOF_LEN_M
 
 impl Serde<STATE_PROOF_INPUT_LEN_M> for ProofInput<ACCOUNT_MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_ACCOUNT_STATE_LEN, MAX_ACCOUNT_DEPTH_NO_LEAF_M, MAX_ACCOUNT_LEAF_LEN> {
     fn serialize(self) -> [Field; STATE_PROOF_INPUT_LEN_M] {
@@ -201,7 +201,7 @@ impl Serde<STATE_PROOF_INPUT_LEN_M> for ProofInput<ACCOUNT_MAX_PREFIXED_KEY_NIBB
 
 /** STORAGE PROOF INPUT **/
 
-global STORAGE_NODES_LEN_M = 3192; // MAX_NODE_LEN * MAX_STORAGE_DEPTH_NO_LEAF_M
+global STORAGE_NODES_LEN_M: u32 = 3192; // MAX_NODE_LEN * MAX_STORAGE_DEPTH_NO_LEAF_M
 
 pub fn serialize_storage_nodes(nodes: [Node; MAX_STORAGE_DEPTH_NO_LEAF_M]) -> [Field; STORAGE_NODES_LEN_M] {
     let mut data: BoundedVec<Field, STORAGE_NODES_LEN_M> = BoundedVec::new();
@@ -221,7 +221,7 @@ pub fn deserialize_storage_nodes(data: [Field; STORAGE_NODES_LEN_M]) -> [Node; M
     result.data
 }
 
-global STORAGE_PROOF_LEN_M = 3262; // STORAGE_NODES_LEN_M + MAX_STORAGE_LEAF_LEN + 1
+global STORAGE_PROOF_LEN_M: u32 = 3262; // STORAGE_NODES_LEN_M + MAX_STORAGE_LEAF_LEN + 1
 
 impl Serde<STORAGE_PROOF_LEN_M> for Proof<MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORAGE_LEAF_LEN> {
     fn serialize(self) -> [Field; STORAGE_PROOF_LEN_M] {
@@ -236,7 +236,7 @@ impl Serde<STORAGE_PROOF_LEN_M> for Proof<MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORA
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; MAX_STORAGE_DEPTH_NO_LEAF_M] = deserialize_storage_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u64;
+        let depth = fragment.pop_front() as u32;
         Proof {
             nodes,
             leaf,
@@ -245,7 +245,7 @@ impl Serde<STORAGE_PROOF_LEN_M> for Proof<MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORA
     }
 }
 
-global STORAGE_PROOF_INPUT_LEN_M = 3360; // STORAGE_MAX_PREFIXED_KEY_NIBBLE_LEN + MAX_STORAGE_VALUE_LEN + STORAGE_PROOF_LEN_M
+global STORAGE_PROOF_INPUT_LEN_M: u32 = 3360; // STORAGE_MAX_PREFIXED_KEY_NIBBLE_LEN + MAX_STORAGE_VALUE_LEN + STORAGE_PROOF_LEN_M
 
 impl Serde<STORAGE_PROOF_INPUT_LEN_M> for ProofInput<STORAGE_MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_STORAGE_VALUE_LEN, MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORAGE_LEAF_LEN> {
     fn serialize(self) -> [Field; STORAGE_PROOF_INPUT_LEN_M] {
@@ -271,7 +271,7 @@ impl Serde<STORAGE_PROOF_INPUT_LEN_M> for ProofInput<STORAGE_MAX_PREFIXED_KEY_NI
 
 /** RECEIPT/TX PROOF INPUT **/
 
-global RECEIPT_NODES_LEN = MAX_NODE_LEN * RECEIPT_MAX_DEPTH_NO_LEAF;
+global RECEIPT_NODES_LEN: u32 = MAX_NODE_LEN * RECEIPT_MAX_DEPTH_NO_LEAF;
 
 pub fn serialize_receipt_nodes(nodes: [Node; RECEIPT_MAX_DEPTH_NO_LEAF]) -> [Field; RECEIPT_NODES_LEN] {
     let mut data: BoundedVec<Field, RECEIPT_NODES_LEN> = BoundedVec::new();
@@ -306,7 +306,7 @@ impl Serde<RECEIPT_PROOF_LEN_M> for Proof<RECEIPT_MAX_DEPTH_NO_LEAF, RECEIPT_MAX
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; RECEIPT_MAX_DEPTH_NO_LEAF] = deserialize_receipt_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u64;
+        let depth = fragment.pop_front() as u32;
         Proof {
             nodes,
             leaf,
@@ -315,8 +315,8 @@ impl Serde<RECEIPT_PROOF_LEN_M> for Proof<RECEIPT_MAX_DEPTH_NO_LEAF, RECEIPT_MAX
     }
 }
 
-global RECEIPT_PROOF_INPUT_LEN_M = RECEIPT_MAX_PREFIXED_KEY_NIBBLE_LEN + RECEIPT_MAX_VALUE_LEN_M + RECEIPT_PROOF_LEN_M;
-global TX_PROOF_INPUT_LEN_M = RECEIPT_PROOF_INPUT_LEN_M;
+global RECEIPT_PROOF_INPUT_LEN_M: u32 = RECEIPT_MAX_PREFIXED_KEY_NIBBLE_LEN + RECEIPT_MAX_VALUE_LEN_M + RECEIPT_PROOF_LEN_M;
+global TX_PROOF_INPUT_LEN_M: u32 = RECEIPT_PROOF_INPUT_LEN_M;
 
 impl Serde<RECEIPT_PROOF_INPUT_LEN_M> for ProofInput<RECEIPT_MAX_PREFIXED_KEY_NIBBLE_LEN, RECEIPT_MAX_VALUE_LEN_M, RECEIPT_MAX_DEPTH_NO_LEAF, RECEIPT_MAX_LEAF_LEN_M> {
     fn serialize(self) -> [Field; RECEIPT_PROOF_INPUT_LEN_M] {

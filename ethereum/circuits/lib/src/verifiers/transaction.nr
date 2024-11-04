@@ -9,8 +9,8 @@ use crate::verifiers::{
 use crate::misc::{types::HASH_LEN, bytes::right_pad, fragment::Fragment};
 use crate::merkle_patricia_proofs::proof::{ProofInput, verify_merkle_proof};
 
-global MAX_ENCODED_TX_LENGTH: u64 = 525;
-global MAX_TX_RLP_LENGTH: u64 = MAX_ENCODED_TX_LENGTH - 1;
+global MAX_ENCODED_TX_LENGTH: u32 = 525;
+global MAX_TX_RLP_LENGTH: u32 = MAX_ENCODED_TX_LENGTH - 1;
 
 pub(crate) fn assert_tx_equals<let MAX_DATA_LEN: u32, let MAX_ENCODED_LEN: u32>(
     tx_type: TxType,

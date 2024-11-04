@@ -24,25 +24,25 @@ If you decide to use our Oracles - you don't need to provide all the data by han
 Here is a list of public functions that you should use if you decide to go the **oracles route**:
 
 ```rust
-pub fn get_header(chain_id: Field, block_number: u64) -> BlockHeaderPartial;
+pub fn get_header(chain_id: Field, block_number: u32) -> BlockHeaderPartial;
 ```
 
 ```rust
-pub fn get_account(chain_id: Field, block_no: u64, address: Address) -> AccountWithinBlock;
+pub fn get_account(chain_id: Field, block_no: u32, address: Address) -> AccountWithinBlock;
 ```
 
 ```rust
-pub fn get_account_with_storage(chain_id: Field, block_number: u64, address: Address, storage_key: Bytes32) -> StorageWithinBlock<1>;
+pub fn get_account_with_storage(chain_id: Field, block_number: u32, address: Address, storage_key: Bytes32) -> StorageWithinBlock<1>;
 ```
 
 ```rust
-pub fn get_receipt<...>(chain_id: Field, block_number: u64, tx_idx: Field, ...) -> TxReceiptWithinBlock;
+pub fn get_receipt<...>(chain_id: Field, block_number: u32, tx_idx: Field, ...) -> TxReceiptWithinBlock;
 ```
 
 ```rust
 pub fn get_transaction<MAX_DATA_LEN, ...>(
     chain_id: Field,
-    block_number: u64,
+    block_number: u32,
     tx_idx: Field,
     ...
 ) -> TransactionWithinBlock<MAX_DATA_LEN>;
@@ -51,9 +51,9 @@ pub fn get_transaction<MAX_DATA_LEN, ...>(
 ```rust
 pub fn get_log<MAX_LOG_DATA_LEN, MAX_LOGS_COUNT>(
     chain_id: Field,
-    block_number: u64,
+    block_number: u32,
     tx_idx: Field,
-    log_idx: u64
+    log_idx: u32
 ) -> LogWithinBlock<MAX_LOG_DATA_LEN>;
 ```
 
@@ -153,7 +153,7 @@ type Bytes32 = [u8; 32];
 
 ```rust
 struct BlockHeaderPartial {
-    number: u64,
+    number: u32,
     hash: Bytes32,
     state_root: Bytes32,
     transactions_root: Bytes32,
@@ -163,7 +163,7 @@ struct BlockHeaderPartial {
 
 ```rust
 struct Account {
-    nonce: u64,
+    nonce: u32,
     balance: Field,
     storage_root: Bytes32,
     code_hash: Bytes32,
@@ -194,8 +194,8 @@ struct TxReceiptWithinBlock {
 
 ```rust
 struct TxPartial<MAX_DATA_LEN> {
-    nonce: u64,
-    gas_limit: u64,
+    nonce: u32,
+    gas_limit: u32,
     to: Option<Address>,
     value: U128,
     data: BoundedVec<u8, MAX_DATA_LEN>,
@@ -233,8 +233,8 @@ struct LogWithinBlock<MAX_LOG_DATA_LEN> {
 
 ## U256
 
-U256 is a structure to use as a type for big numbers.  
-It is used when dealing with numbers up to 2<sup>256</sup>. They can exceed Field maximum value.  
+U256 is a structure to use as a type for big numbers.
+It is used when dealing with numbers up to 2<sup>256</sup>. They can exceed Field maximum value.
 In particular it is a word size in ETH and therefore it is a basic type used in both storage and slot values calculations.
 
 [There](.src/uint256.nr) is an unoptimized implementation of this type using two U128 structures. Optimized version will appear in Noir.

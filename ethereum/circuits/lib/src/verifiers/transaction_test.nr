@@ -53,7 +53,7 @@ mod verify_tx {
     #[test]
     fn legacy_tx() {
         verify_tx(
-            legacy_tx_idx,
+            legacy_tx_idx as Field,
             legacy_tx_type,
             legacy_transaction,
             legacy_proof_input,

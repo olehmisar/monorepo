@@ -45,11 +45,11 @@ pub fn nibbles_to_bytes<let BYTES_LEN: u32, let NIB_LEN: u32>(nibbles: [u8; NIB_
     bytes
 }
 
-pub fn right_pad<let N: u32>(arr: Fragment<N, u8>) -> BoundedVec<u8, N> {
+pub fn right_pad<let N: u32>(arr: [u8; N]) -> BoundedVec<u8, N> {
     byte_value(arr)
 }
 
-pub fn left_to_right_padding<let N: u32>(nibbles: [u8; N]) -> ([u8; N], u64) {
+pub fn left_to_right_padding<let N: u32>(nibbles: [u8; N]) -> ([u8; N], u32) {
     let mut BoundedVec {storage: shifted, len} = right_pad(nibbles);
     if (len % 2 == 1) {
         shift_right_by_one(&mut shifted);
@@ -71,11 +71,11 @@ pub fn shift_right_by_one<let N: u32>(arr: &mut [u8; N]) {
     }
 }
 
-pub(crate) fn left_byte_shift<let N: u32>(input: [u8; N], n: u64) -> [u8; N] {
+pub(crate) fn left_byte_shift<let N: u32>(input: [u8; N], n: u32) -> [u8; N] {
     let mut out = [0; N];
 
     for i in 0..N {
-        let index_ind = (((i + n) as u32) < (N as u32)) as u64;
+        let index_ind = (((i + n) as u32) < (N as u32)) as u32;
         out[i] = (index_ind as u8) * input[index_ind * (i + n)];
     }
 
@@ -87,8 +87,8 @@ pub(crate) fn byte_value<let N: u32>(in_value: [u8; N]) -> BoundedVec<u8, N> {
     let mut value_length = 0;
 
     for i in 0..N {
-        let num_bytes_ind = (value_length == 0) as u64;
-        let byte_ind = (in_value[i] != 0) as u64;
+        let num_bytes_ind = (value_length == 0) as u32;
+        let byte_ind = (in_value[i] != 0) as u32;
         value_length = num_bytes_ind * byte_ind * (N - i) + (1 - num_bytes_ind) * value_length;
     }
 

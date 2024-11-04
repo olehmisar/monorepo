@@ -1,16 +1,16 @@
-import { mkdir, rm, writeFile } from 'fs/promises';
 import { Trie } from '@ethereumjs/trie';
+import { mkdir, rm, writeFile } from 'fs/promises';
+import { bytesToHex } from 'viem';
 import { PROOF_FIXTURES } from '../fixtures/merkleProofsConfig.js';
 import { assert, encodeHexStringToArray } from '../main.js';
-import { hasDuplicates } from '../util/array.js';
-import { bytesToHex } from 'viem';
-import { createTopLevelProofFixtureWithRoot } from './noir_fixtures/proof.js';
-import { getProofConfig } from '../noir/oracles/rpc/common/proofConfig.js';
-import { BYTE_HEX_LEN } from '../util/const.js';
 import { encodeUint8Array } from '../noir/oracles/common/encode.js';
+import { getProofConfig } from '../noir/oracles/rpc/common/proofConfig.js';
+import { hasDuplicates } from '../util/array.js';
+import { BYTE_HEX_LEN } from '../util/const.js';
+import { createTopLevelProofFixtureWithRoot } from './noir_fixtures/proof.js';
 
 const NOIR_PROOF_FIXTURES_DIRECTORY = '../circuits/lib/src/fixtures/merkle_proofs';
-const MAX_VALUE_LEN = 100;
+const MAX_VALUE_LEN: u32 = 100;
 const MAX_DEPTH = 10;
 
 let fixtureModule = ``;

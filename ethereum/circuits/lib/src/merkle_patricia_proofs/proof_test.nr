@@ -278,8 +278,8 @@ mod verify_leaf {
     global empty_value = [];
     global empty_leaf = [0xc2, 0x20, 0x80]; // ["0x20","0x"]
 
-    global MAX_PREFIXED_KEY_NIBBLE_LEN = 6;
-    global MAX_VALUE_LEN = 3;
+    global MAX_PREFIXED_KEY_NIBBLE_LEN: u32 = 6;
+    global MAX_VALUE_LEN: u32 = 3;
     global some_key = [0xab, 0xcd];
     global some_key_fragment: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8> = Fragment::from_array_resize(some_key);
     global some_key_nibbles = bytes_to_nibbles(some_key_fragment);

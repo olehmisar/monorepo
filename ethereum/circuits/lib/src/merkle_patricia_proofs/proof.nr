@@ -22,7 +22,7 @@ struct Proof<let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> {
 	nodes: [Node; MAX_DEPTH_NO_LEAF],
     // Leaf has a different max length than internal node as it contains the value of arbitrary length.
 	leaf: Leaf<MAX_LEAF_LEN>,
-	depth: u32
+	depth: u64
 }
 
 struct ProofInput<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32, let MAX_DEPTH_NO_LEAF: u32, let MAX_LEAF_LEN: u32> {
@@ -180,7 +180,7 @@ pub fn verify_merkle_proof<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_L
     // Verify hashes of all the nodes in the proof path.
     let mut curr_hash = Fragment::from_array(root);
     for i in 0..MAX_DEPTH {
-        if i < proof.depth - 1 {
+        if i as u64 < proof.depth - 1 {
             verify_node_hash(proof.nodes[i], curr_hash.data);
             curr_hash = extract_hash(proof.nodes[i], key_nibbles, &mut key_ptr);
         }

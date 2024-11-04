@@ -71,7 +71,7 @@ impl Serde<ACCOUNT_LEN> for Account {
 
     fn deserialize(data: [Field; ACCOUNT_LEN]) -> Self {
         let mut fragment = Fragment::from_array(data);
-        let nonce = fragment.pop_front() as u32;
+        let nonce = fragment.pop_front() as u64;
         let balance = fragment.pop_front();
         let storage_root = fragment.pop_front_array().deserialize();
         let code_hash = fragment.pop_front_array().deserialize();
@@ -166,7 +166,7 @@ impl Serde<STATE_PROOF_LEN_M> for Proof<MAX_ACCOUNT_DEPTH_NO_LEAF_M, MAX_ACCOUNT
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; MAX_ACCOUNT_DEPTH_NO_LEAF_M] = deserialize_state_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u32;
+        let depth = fragment.pop_front() as u64;
         Proof {
             nodes,
             leaf,
@@ -236,7 +236,7 @@ impl Serde<STORAGE_PROOF_LEN_M> for Proof<MAX_STORAGE_DEPTH_NO_LEAF_M, MAX_STORA
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; MAX_STORAGE_DEPTH_NO_LEAF_M] = deserialize_storage_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u32;
+        let depth = fragment.pop_front() as u64;
         Proof {
             nodes,
             leaf,
@@ -306,7 +306,7 @@ impl Serde<RECEIPT_PROOF_LEN_M> for Proof<RECEIPT_MAX_DEPTH_NO_LEAF, RECEIPT_MAX
         let mut fragment = Fragment::from_array(data);
         let nodes: [Node; RECEIPT_MAX_DEPTH_NO_LEAF] = deserialize_receipt_nodes(fragment.pop_front_array());
         let leaf = fragment.pop_front_array().deserialize();
-        let depth = fragment.pop_front() as u32;
+        let depth = fragment.pop_front() as u64;
         Proof {
             nodes,
             leaf,

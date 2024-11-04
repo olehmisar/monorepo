@@ -57,7 +57,7 @@ type Hash = [u8; 32];
 struct Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
 	nodes: [Node; MAX_DEPTH_NO_LEAF],
 	leaf: Leaf<MAX_LEAF_LEN>,
-	depth: u32
+	depth: u64
 }
 ```
 

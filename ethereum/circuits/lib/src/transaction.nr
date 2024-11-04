@@ -16,7 +16,7 @@ global MAX_TX_ENCODED_LEN_M = MAX_VALUE_LEN_M;
 
 type TxType = u8;
 
-struct TxPartial<MAX_DATA_LEN> {
+struct TxPartial<let MAX_DATA_LEN: u32> {
     nonce: u64,
     gas_limit: u64,
     to: Option<Address>,
@@ -27,7 +27,7 @@ struct TxPartial<MAX_DATA_LEN> {
     s: Bytes32,  // ECDSA signature part
 }
 
-impl<MAX_DATA_LEN> Eq for TxPartial<MAX_DATA_LEN> {
+impl<let MAX_DATA_LEN: u32> Eq for TxPartial<MAX_DATA_LEN> {
     fn eq(self, other: Self) -> bool {
         (self.nonce == other.nonce) &
         (self.gas_limit == other.gas_limit) &
@@ -40,7 +40,7 @@ impl<MAX_DATA_LEN> Eq for TxPartial<MAX_DATA_LEN> {
     }
 }
 
-struct ForeignCallTransaction<MAX_DATA_LEN> {
+struct ForeignCallTransaction<let MAX_DATA_LEN: u32> {
     nonce: u64,
     gas_limit: u64,
     to: Address,
@@ -54,7 +54,7 @@ struct ForeignCallTransaction<MAX_DATA_LEN> {
     s: Bytes32,  // ECDSA signature part
 }
 
-impl<MAX_DATA_LEN> From<TxPartial> for ForeignCallTransaction<MAX_DATA_LEN> {
+impl<let MAX_DATA_LEN: u32> From<TxPartial> for ForeignCallTransaction<MAX_DATA_LEN> {
     fn from(tx: TxPartial<MAX_DATA_LEN>) -> Self {
         let mut data = [0; MAX_DATA_LEN];
 
@@ -79,7 +79,7 @@ impl<MAX_DATA_LEN> From<TxPartial> for ForeignCallTransaction<MAX_DATA_LEN> {
     }
 }
 
-impl<MAX_DATA_LEN> From<ForeignCallTransaction> for TxPartial<MAX_DATA_LEN> {
+impl<let MAX_DATA_LEN: u32> From<ForeignCallTransaction> for TxPartial<MAX_DATA_LEN> {
     fn from(tx: ForeignCallTransaction<MAX_DATA_LEN>) -> Self {
         let data = BoundedVec { storage: tx.data, len: tx.data_len };
         TxPartial {
@@ -97,12 +97,12 @@ impl<MAX_DATA_LEN> From<ForeignCallTransaction> for TxPartial<MAX_DATA_LEN> {
 
 type ProofInputSerialized<LEN> = [Field; LEN];
 
-struct TransactionWithinBlock<MAX_DATA_LEN> {
+struct TransactionWithinBlock<let MAX_DATA_LEN: u32> {
     transaction: TxPartial<MAX_DATA_LEN>,
     block_hash: Bytes32
 }
 
-pub fn get_transaction<MAX_DATA_LEN>(
+pub fn get_transaction<let MAX_DATA_LEN: u32>(
     chain_id: Field,
     block_number: u64,
     tx_idx: Field
@@ -121,13 +121,13 @@ pub fn get_transaction<MAX_DATA_LEN>(
 }
 
 #[oracle(get_transaction)]
-unconstrained fn get_transaction_oracle<MAX_DATA_LEN, PROOF_INPUT_LEN>(
+unconstrained fn get_transaction_oracle<let MAX_DATA_LEN: u32, let PROOF_INPUT_LEN: u32>(
     _chain_id: Field,
     _block_number: u64,
     _tx_idx: Field
 ) -> (TxType, ForeignCallTransaction<MAX_DATA_LEN>, ProofInputSerialized<PROOF_INPUT_LEN>) {}
 
-unconstrained fn get_transaction_unconstrained_M<MAX_DATA_LEN>(
+unconstrained fn get_transaction_unconstrained_M<let MAX_DATA_LEN: u32>(
     chain_id: Field,
     block_number: u64,
     tx_idx: Field

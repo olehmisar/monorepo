@@ -7,7 +7,7 @@ pub fn byte_to_nibbles(byte: u8) -> (u8, u8) {
     (upper, lower)
 }
 
-pub fn bytes_to_nibbles<MAX_NIBBLE_LEN>(bytes: Fragment<MAX_NIBBLE_LEN, u8>) -> Fragment<MAX_NIBBLE_LEN, u8> {
+pub fn bytes_to_nibbles<let MAX_NIBBLE_LEN: u32>(bytes: Fragment<MAX_NIBBLE_LEN, u8>) -> Fragment<MAX_NIBBLE_LEN, u8> {
     assert(
         MAX_NIBBLE_LEN >= 2 * bytes.length, "Bytes implicit data length must be at least 2 times larger than bytes explicit length"
     );
@@ -32,7 +32,7 @@ pub fn nibbles_to_byte(upper: u8, lower: u8) -> u8 {
     upper * 16 + lower
 }
 
-pub fn nibbles_to_bytes<BYTES_LEN, NIB_LEN>(nibbles: [u8; NIB_LEN]) -> [u8; BYTES_LEN] {
+pub fn nibbles_to_bytes<let BYTES_LEN: u32, let NIB_LEN: u32>(nibbles: [u8; NIB_LEN]) -> [u8; BYTES_LEN] {
     assert(NIB_LEN == 2 * BYTES_LEN, "Generic arguments don't match");
 
     let mut bytes = [0; BYTES_LEN];
@@ -45,11 +45,11 @@ pub fn nibbles_to_bytes<BYTES_LEN, NIB_LEN>(nibbles: [u8; NIB_LEN]) -> [u8; BYTE
     bytes
 }
 
-pub fn right_pad<N>(arr: [u8; N]) -> BoundedVec<u8, N> {
+pub fn right_pad<let N: u32>(arr: Fragment<N, u8>) -> BoundedVec<u8, N> {
     byte_value(arr)
 }
 
-pub fn left_to_right_padding<N>(nibbles: [u8; N]) -> ([u8; N], u64) {
+pub fn left_to_right_padding<let N: u32>(nibbles: [u8; N]) -> ([u8; N], u64) {
     let mut BoundedVec {storage: shifted, len} = right_pad(nibbles);
     if (len % 2 == 1) {
         shift_right_by_one(&mut shifted);
@@ -60,7 +60,7 @@ pub fn left_to_right_padding<N>(nibbles: [u8; N]) -> ([u8; N], u64) {
     (shifted, shifted_by)
 }
 
-pub fn shift_right_by_one<N>(arr: &mut [u8; N]) {
+pub fn shift_right_by_one<let N: u32>(arr: &mut [u8; N]) {
     assert(arr[N - 1] == 0, "Last element must be zero to shift the array right by one");
 
     let mut last = 0;
@@ -71,7 +71,7 @@ pub fn shift_right_by_one<N>(arr: &mut [u8; N]) {
     }
 }
 
-pub(crate) fn left_byte_shift<N>(input: [u8; N], n: u64) -> [u8; N] {
+pub(crate) fn left_byte_shift<let N: u32>(input: [u8; N], n: u64) -> [u8; N] {
     let mut out = [0; N];
 
     for i in 0..N {
@@ -83,7 +83,7 @@ pub(crate) fn left_byte_shift<N>(input: [u8; N], n: u64) -> [u8; N] {
 }
 
 // Converts big-endian byte array to a right-padded one.
-pub(crate) fn byte_value<N>(in_value: [u8; N]) -> BoundedVec<u8, N> {
+pub(crate) fn byte_value<let N: u32>(in_value: [u8; N]) -> BoundedVec<u8, N> {
     let mut value_length = 0;
 
     for i in 0..N {
@@ -97,7 +97,7 @@ pub(crate) fn byte_value<N>(in_value: [u8; N]) -> BoundedVec<u8, N> {
     BoundedVec { storage: value, len: value_length }
 }
 
-pub fn add_bigint<N>(left: [u8; N], right: [u8; N]) -> [u8; N] {
+pub fn add_bigint<let N: u32>(left: [u8; N], right: [u8; N]) -> [u8; N] {
     let mut carry: u32 = 0;
     let mut result: [u8; N] = [0; N];
 

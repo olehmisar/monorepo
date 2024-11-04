@@ -20,7 +20,7 @@ global TX_TYPE_TO_FIELD_LAYOUT = [
 
 global MAX_TX_FIELDS_COUNT = 14;
 
-pub(crate) fn assert_tx_rlp_equals<MAX_DATA_LEN, MAX_ENCODED_LEN>(
+pub(crate) fn assert_tx_rlp_equals<let MAX_DATA_LEN: u32, let MAX_ENCODED_LEN: u32>(
     tx_rlp: Fragment<MAX_ENCODED_LEN, u8>,
     tx_type: TxType,
     tx: TxPartial<MAX_DATA_LEN>

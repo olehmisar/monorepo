@@ -12,7 +12,7 @@ use crate::merkle_patricia_proofs::proof::{ProofInput, verify_merkle_proof};
 global MAX_ENCODED_TX_LENGTH: u64 = 525;
 global MAX_TX_RLP_LENGTH: u64 = MAX_ENCODED_TX_LENGTH - 1;
 
-pub(crate) fn assert_tx_equals<MAX_DATA_LEN, MAX_ENCODED_LEN>(
+pub(crate) fn assert_tx_equals<let MAX_DATA_LEN: u32, let MAX_ENCODED_LEN: u32>(
     tx_type: TxType,
     encoded_tx: Fragment<MAX_ENCODED_LEN, u8>,
     tx: TxPartial<MAX_DATA_LEN>
@@ -24,7 +24,7 @@ pub(crate) fn assert_tx_equals<MAX_DATA_LEN, MAX_ENCODED_LEN>(
     assert_tx_rlp_equals(tx_rlp, tx_type, tx);
 }
 
-pub fn verify_tx<MAX_DATA_LEN, MAX_ENCODED_LEN, MAX_LEAF_LEN>(
+pub fn verify_tx<let MAX_DATA_LEN: u32, let MAX_ENCODED_LEN: u32, let MAX_LEAF_LEN: u32>(
     tx_idx: Field,
     tx_type: TxType,
     tx: TxPartial<MAX_DATA_LEN>,

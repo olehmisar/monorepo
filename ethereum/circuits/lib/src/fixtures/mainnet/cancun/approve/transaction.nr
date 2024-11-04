@@ -32,4 +32,4 @@ global transaction = TxPartial {
   ]
 };
 
-global foreign_call_transaction: ForeignCallTransaction<1000> = transaction.into();
+global foreign_call_transaction = ForeignCallTransaction::<1000>::from(transaction);

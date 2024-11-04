@@ -19,13 +19,13 @@ global LOG_ADDRESS_INDEX = 0;
 global LOG_TOPICS_INDEX = 1;
 global LOG_DATA_INDEX = 2;
 
-struct Log<MAX_LOG_DATA_LEN> {
+struct Log<let MAX_LOG_DATA_LEN: u32> {
     address: Address,
     topics: BoundedVec<Bytes32, MAX_TOPICS_COUNT>,
     data: BoundedVec<u8, MAX_LOG_DATA_LEN>,
 }
 
-impl<MAX_LOG_DATA_LEN> Eq for Log<MAX_LOG_DATA_LEN> {
+impl<let MAX_LOG_DATA_LEN: u32> Eq for Log<MAX_LOG_DATA_LEN> {
     fn eq(self, other: Self) -> bool {
         (self.address == other.address) &
         (self.topics == other.topics) &
@@ -33,12 +33,12 @@ impl<MAX_LOG_DATA_LEN> Eq for Log<MAX_LOG_DATA_LEN> {
     }
 }
 
-struct LogWithinBlock<MAX_LOG_DATA_LEN> {
+struct LogWithinBlock<let MAX_LOG_DATA_LEN: u32> {
     log: Log<MAX_LOG_DATA_LEN>,
     block_hash: Bytes32
 }
 
-pub fn get_log<MAX_LOG_DATA_LEN, MAX_LOGS_COUNT>(
+pub fn get_log<let MAX_LOG_DATA_LEN: u32, let MAX_LOGS_COUNT: u32>(
     chain_id: Field,
     block_number: u64,
     tx_idx: Field,
@@ -63,7 +63,7 @@ pub fn get_log<MAX_LOG_DATA_LEN, MAX_LOGS_COUNT>(
     LogWithinBlock { log, block_hash: header.hash }
 }
 
-pub(crate) fn extract_log<MAX_LOG_DATA_LEN, MAX_LOGS_COUNT, MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+pub(crate) fn extract_log<let MAX_LOG_DATA_LEN: u32, let MAX_LOGS_COUNT: u32, let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     receipt_rlp_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> ,
     log_idx: u64
 ) -> Log<MAX_LOG_DATA_LEN> {
@@ -83,13 +83,13 @@ pub(crate) fn extract_log<MAX_LOG_DATA_LEN, MAX_LOGS_COUNT, MAX_RECEIPT_RLP_FRAG
     Log { address, topics, data }
 }
 
-fn extract_logs_fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN>(receipt_rlp_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8>) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {
+fn extract_logs_fragment<let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(receipt_rlp_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8>) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {
     let receipt_rlp_list: RlpList<RECEIPT_FIELDS_COUNT> = decode_list(receipt_rlp_fragment);
     assert(receipt_rlp_list.len == RECEIPT_FIELDS_COUNT, "Invalid receipt fields count");
     rlp_subfragment(receipt_rlp_fragment, receipt_rlp_list.get(LOGS_INDEX))
 }
 
-fn extract_log_fragment<MAX_LOGS_COUNT, MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+fn extract_log_fragment<let MAX_LOGS_COUNT: u32, let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     logs_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8>,
     log_idx: u64
 ) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {
@@ -97,14 +97,14 @@ fn extract_log_fragment<MAX_LOGS_COUNT, MAX_RECEIPT_RLP_FRAGMENT_LEN>(
     rlp_subfragment(logs_fragment, logs_rlp_list.get(log_idx))
 }
 
-fn extract_address<MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+fn extract_address<let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     log_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> ,
     log_values_rlp_list: RlpList<LOG_FIELDS_COUNT>
 ) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {
     rlp_subfragment(log_fragment, log_values_rlp_list.get(LOG_ADDRESS_INDEX))
 }
 
-fn extract_topics<MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+fn extract_topics<let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     log_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> ,
     log_values_rlp_list: RlpList<LOG_FIELDS_COUNT>
 ) -> BoundedVec<Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> , MAX_TOPICS_COUNT> {
@@ -116,14 +116,14 @@ fn extract_topics<MAX_RECEIPT_RLP_FRAGMENT_LEN>(
     )
 }
 
-fn extract_data<MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+fn extract_data<let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     log_fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> ,
     log_values_rlp_list: RlpList<LOG_FIELDS_COUNT>
 ) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {
     rlp_subfragment(log_fragment, log_values_rlp_list.get(LOG_DATA_INDEX))
 }
 
-fn rlp_subfragment<MAX_RECEIPT_RLP_FRAGMENT_LEN>(
+fn rlp_subfragment<let MAX_RECEIPT_RLP_FRAGMENT_LEN: u32>(
     fragment: Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8>,
     rlp_fragment: RlpFragment
 ) -> Fragment<MAX_RECEIPT_RLP_FRAGMENT_LEN, u8> {

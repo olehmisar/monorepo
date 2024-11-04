@@ -17,7 +17,7 @@ mod mainnet {
                 ]);
                 let VALUE_INDEX = 1;
 
-                assert(bytes32_to_field(token_id) <= BORED_APE_YACHT_CLUB_MAX_TOKEN_ID, "Token ID is too high");
+                assert(bytes32_to_field(token_id) as u32 <= BORED_APE_YACHT_CLUB_MAX_TOKEN_ID, "Token ID is too high");
                 let owner_slot = dynamic_array_with_precalculated_slot(BORED_APE_YACHT_CLUB_TOKEN_OWNERS_INNER_ENTRIES_SLOT, 2, bytes32_to_field(token_id));
                 struct_slot(owner_slot, VALUE_INDEX)
             },
@@ -34,7 +34,7 @@ mod mainnet {
                 let CRYPTO_PUNK_MAX_TOKEN_ID: u32 = 9999;
                 let CRYPTO_PUNK_TOKEN_OWNERS_INNER_ENTRIES_SLOT = U256::from_field(10);
 
-                assert(bytes32_to_field(token_id) <= CRYPTO_PUNK_MAX_TOKEN_ID, "Token ID is too high");
+                assert(bytes32_to_field(token_id) as u32 <= CRYPTO_PUNK_MAX_TOKEN_ID, "Token ID is too high");
                 mapping(CRYPTO_PUNK_TOKEN_OWNERS_INNER_ENTRIES_SLOT, token_id)
             },
             chain_id: chain_id::MAINNET
@@ -62,7 +62,7 @@ mod sepolia {
             ]);
             let VALUE_INDEX = 1;
 
-            assert(bytes32_to_field(token_id) <= BORED_APE_YACHT_CLUB_MAX_TOKEN_ID, "Token ID is too high");
+            assert(bytes32_to_field(token_id) as u32 <= BORED_APE_YACHT_CLUB_MAX_TOKEN_ID, "Token ID is too high");
             let owner_slot = dynamic_array_with_precalculated_slot(BORED_APE_YACHT_CLUB_TOKEN_OWNERS_INNER_ENTRIES_SLOT, 2, bytes32_to_field(token_id));
             struct_slot(owner_slot, VALUE_INDEX)
         },

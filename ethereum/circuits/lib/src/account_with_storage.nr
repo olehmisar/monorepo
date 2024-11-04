@@ -66,7 +66,7 @@ fn assert_storage_key_equals(
     );
 }
 
-fn get_fragment<N>(left_padded_value: [u8; N]) -> Fragment<N, u8> {
+fn get_fragment<let N: u32>(left_padded_value: [u8; N]) -> Fragment<N, u8> {
     let value_len = right_pad(left_padded_value).len();
     let value_offset = N - value_len;
     Fragment::new(value_offset, value_len, left_padded_value)

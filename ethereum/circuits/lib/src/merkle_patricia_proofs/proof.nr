@@ -21,7 +21,7 @@ type Value<MAX_VALUE_LEN> = [u8; MAX_VALUE_LEN];
 struct Proof<MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN> {
 	nodes: [Node; MAX_DEPTH_NO_LEAF],
     // Leaf has a different max length than internal node as it contains the value of arbitrary length.
-	leaf: Leaf<MAX_LEAF_LEN>, 
+	leaf: Leaf<MAX_LEAF_LEN>,
 	depth: u64
 }
 
@@ -63,7 +63,7 @@ pub fn parity(prefix: u8) -> u64 {
 
 // Leaf and extension nodes are RLP lists with 2 elements: prefixed key nibbles (in bytes) and value.
 // This function removes the prefix and returns appropriate number of key nibbles according to the parity of the prefix (see function: parity).
-pub fn strip_prefix<MAX_PREFIXED_KEY_NIBBLE_LEN>(prefixed_key_bytes: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>) -> Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8> {
+pub fn strip_prefix<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(prefixed_key_bytes: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>) -> Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8> {
     let mut prefixed_key_nibbles = bytes_to_nibbles(prefixed_key_bytes);
 
     let prefix = prefixed_key_nibbles.pop_front();
@@ -75,7 +75,7 @@ pub fn strip_prefix<MAX_PREFIXED_KEY_NIBBLE_LEN>(prefixed_key_bytes: Fragment<MA
     prefixed_key_nibbles
 }
 
-pub fn extract_hash_from_branch_node<MAX_PREFIXED_KEY_NIBBLE_LEN>(
+pub fn extract_hash_from_branch_node<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     node_rlp_list: RlpList<MAX_NODE_FIELDS>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
@@ -90,7 +90,7 @@ pub fn extract_hash_from_branch_node<MAX_PREFIXED_KEY_NIBBLE_LEN>(
     Fragment::new(node_rlp_list.get(curr_nibble).offset, HASH_LEN, node).focus()
 }
 
-pub fn extract_hash_from_extension_node<MAX_PREFIXED_KEY_NIBBLE_LEN>(
+pub fn extract_hash_from_extension_node<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     node_rlp_list: RlpList<MAX_NODE_FIELDS>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
@@ -111,7 +111,7 @@ pub fn extract_hash_from_extension_node<MAX_PREFIXED_KEY_NIBBLE_LEN>(
     Fragment::new(node_rlp_list.get(1).offset, HASH_LEN, node).focus()
 }
 
-pub fn extract_hash<MAX_PREFIXED_KEY_NIBBLE_LEN>(
+pub fn extract_hash<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32>(
     node: Node,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
     key_ptr: &mut u64
@@ -130,11 +130,11 @@ pub fn extract_hash<MAX_PREFIXED_KEY_NIBBLE_LEN>(
     hash
 }
 
-pub fn verify_node_hash<MAX_LEN>(node: [u8; MAX_LEN], hash: [u8; HASH_LEN]) {
+pub fn verify_node_hash<let MAX_LEN: u32>(node: [u8; MAX_LEN], hash: [u8; HASH_LEN]) {
     assert(keccak256(node, get_node_len(node) as u32) == hash, "Invalid node hash");
 }
 
-pub fn verify_leaf<MAX_LEAF_LEN, MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN>(
+pub fn verify_leaf<let MAX_LEAF_LEN: u32, let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32>(
     leaf: Leaf<MAX_LEAF_LEN>,
     key_nibbles: Fragment<MAX_PREFIXED_KEY_NIBBLE_LEN, u8>,
     key_ptr: &mut u64,
@@ -167,7 +167,7 @@ pub fn verify_leaf<MAX_LEAF_LEN, MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN>(
     );
 }
 
-pub fn verify_merkle_proof<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH, MAX_LEAF_LEN>(
+pub fn verify_merkle_proof<let MAX_PREFIXED_KEY_NIBBLE_LEN: u32, let MAX_VALUE_LEN: u32, let MAX_DEPTH: u32, let MAX_LEAF_LEN: u32>(
     key: Key<MAX_PREFIXED_KEY_NIBBLE_LEN>,
     value: Value<MAX_VALUE_LEN>,
     root: Hash,
@@ -188,4 +188,3 @@ pub fn verify_merkle_proof<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH
     verify_node_hash(proof.leaf, curr_hash.data);
     verify_leaf(proof.leaf, key_nibbles, &mut key_ptr, value);
 }
-

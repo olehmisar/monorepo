@@ -1,13 +1,13 @@
 use crate::misc::{arrays::{memcpy_up_to_length, resize}, iterator::Iterator};
 use dep::std::unsafe::zeroed;
 
-struct Fragment<MAX_DATA_LEN, T> {
+struct Fragment<let MAX_DATA_LEN: u32, T> {
     offset: u64,
     length: u64,
     data: [T; MAX_DATA_LEN]
 }
 
-impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
+impl<let MAX_DATA_LEN: u32, T> Fragment<MAX_DATA_LEN, T> {
     pub fn empty() -> Fragment<MAX_DATA_LEN, T> {
         Fragment { offset: 0, length: 0, data: zeroed() }
     }
@@ -28,15 +28,15 @@ impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
         Fragment { offset: 0, length: data.len() as u64, data }
     }
 
-    pub fn from_array_resize<DATA_LEN>(data: [T; DATA_LEN]) -> Fragment<MAX_DATA_LEN, T> {
+    pub fn from_array_resize<let DATA_LEN: u32>(data: [T; DATA_LEN]) -> Fragment<MAX_DATA_LEN, T> {
         Fragment { offset: 0, length: data.len() as u64, data: resize(data) }
     }
 
-    pub fn to_array<NEW_MAX_LEN>(self) -> [T; NEW_MAX_LEN] {
+    pub fn to_array<let NEW_MAX_LEN: u32>(self) -> [T; NEW_MAX_LEN] {
         self.focus().data
     }
 
-    pub fn to_bounded_vec<N>(self) -> BoundedVec<T, N> {
+    pub fn to_bounded_vec<let N: u32>(self) -> BoundedVec<T, N> {
         assert(self.length <= N, "Fragment length exceeds BoundedVec max length");
         let bounded_vec: &mut BoundedVec<T, N> = &mut BoundedVec::new();
         self.each(|x, _| bounded_vec.push(x));
@@ -48,7 +48,7 @@ impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
         Fragment::new_with_length(vec.len, vec.storage)
     }
 
-    pub fn focus<NEW_MAX_LEN>(self) -> Fragment<NEW_MAX_LEN, T> {
+    pub fn focus<let NEW_MAX_LEN: u32>(self) -> Fragment<NEW_MAX_LEN, T> {
         assert(NEW_MAX_LEN >= self.length, "New max length is smaller than fragment length");
 
         let mut new_data: [T; NEW_MAX_LEN] = zeroed();
@@ -71,7 +71,7 @@ impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
         // Previously, the assert message was f"Index out of bounds, tried to access index {index} but the length is {length}".
         // However, this contributed to a compiler panic with message: Resolving an assert message should happen only once as the VM should have failed.
         // An issue was posted about this to Noir: https://github.com/noir-lang/noir/issues/5036
-        // As of nargo 0.29.0 replacing the f-string with normal string prevents compiler panic e.g. on header_int_test. 
+        // As of nargo 0.29.0 replacing the f-string with normal string prevents compiler panic e.g. on header_int_test.
         assert(index < self.length, "Index out of bounds");
 
         self.data[self.offset + index]
@@ -117,7 +117,7 @@ impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
         }
     }
 
-    pub fn eq<OTHER_MAX_DATA_LEN>(self, other: Fragment<OTHER_MAX_DATA_LEN, T>) -> bool where T: Eq {
+    pub fn eq<let OTHER_MAX_DATA_LEN: u32>(self, other: Fragment<OTHER_MAX_DATA_LEN, T>) -> bool where T: Eq {
         let res = &mut true;
         if (self.length != other.length) {
             *res = false;
@@ -134,7 +134,7 @@ impl<MAX_DATA_LEN, T> Fragment<MAX_DATA_LEN, T> {
     }
 }
 
-impl<MAX_DATA_LEN, T> Eq for Fragment<MAX_DATA_LEN, T> where T: Eq {
+impl<let MAX_DATA_LEN: u32, T> Eq for Fragment<MAX_DATA_LEN, T> where T: Eq {
     fn eq(self, other: Fragment<MAX_DATA_LEN, T>) -> bool {
         let res = &mut true;
         if self.length != other.length {
@@ -149,7 +149,7 @@ impl<MAX_DATA_LEN, T> Eq for Fragment<MAX_DATA_LEN, T> where T: Eq {
     }
 }
 
-impl<MAX_DATA_LEN, T> Iterator<T> for Fragment<MAX_DATA_LEN, T> {
+impl<let MAX_DATA_LEN: u32, T> Iterator<T> for Fragment<MAX_DATA_LEN, T> {
     fn each<Env>(self, f: fn[Env](T, u64) -> ()) {
         for i in 0..MAX_DATA_LEN {
             if i < self.length {

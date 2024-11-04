@@ -32,7 +32,7 @@ fn assert_address_equals(address_hash: [u8; MAX_PREFIXED_KEY_NIBBLE_LEN], addres
     assert(address_hash_fragment.eq(other_address_hash_fragment), "Address mismatch");
 }
 
-pub fn verify_account<MAX_DEPTH_NO_LEAF>(
+pub fn verify_account<let MAX_DEPTH_NO_LEAF: u32>(
     address: Address,
     account: Account,
     state_proof_input: ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_ACCOUNT_STATE_LEN, MAX_DEPTH_NO_LEAF, MAX_ACCOUNT_LEAF_LEN>,

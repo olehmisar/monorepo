@@ -15,7 +15,7 @@ pub(crate) fn is_pre_byzantium(block_number: u64) -> bool {
     block_number < BYZANTIUM_BLOCK_NUM as u64
 }
 
-pub(crate) fn assert_receipt_equals<MAX_ENCODED_LEN>(
+pub(crate) fn assert_receipt_equals<let MAX_ENCODED_LEN: u32>(
     block_number: u64,
     tx_type: TxType,
     encoded_receipt: Fragment<MAX_ENCODED_LEN, u8>,
@@ -29,7 +29,7 @@ pub(crate) fn assert_receipt_equals<MAX_ENCODED_LEN>(
     assert_receipt_rlp_equals(is_pre_byzantium, receipt_rlp, receipt);
 }
 
-pub fn verify_receipt<MAX_ENCODED_LEN, MAX_LEAF_LEN>(
+pub fn verify_receipt<let MAX_ENCODED_LEN: u32, let MAX_LEAF_LEN: u32>(
     block_number: u64,
     tx_idx: Field,
     tx_type: TxType,

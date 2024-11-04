@@ -18,7 +18,7 @@ use crate::uint256::U256;
 use crate::merkle_patricia_proofs::proof::{ProofInput, Proof, Node, MAX_NODE_LEN};
 use dep::std::unsafe::zeroed;
 
-trait Serde<LEN> {
+trait Serde<let LEN: u32> {
     fn serialize(self) -> [Field; LEN];
     fn deserialize(data: [Field; LEN]) -> Self;
 }
@@ -47,7 +47,7 @@ impl Serde<U256_SERIALIZED_LEN> for U256 {
     }
 }
 
-impl<LEN> Serde<LEN> for [u8; LEN] {
+impl<let LEN: u32> Serde<LEN> for [u8; LEN] {
     fn serialize(self) -> [Field; LEN] {
         self.map(|x: u8| x as Field)
     }

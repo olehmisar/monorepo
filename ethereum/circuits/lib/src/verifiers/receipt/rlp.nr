@@ -9,7 +9,7 @@ global STATUS_INDEX = 0;
 global CUMULATIVE_GAS_USED_INDEX = 1;
 global LOGS_BLOOM_INDEX = 2;
 
-pub(crate) fn assert_receipt_rlp_equals<MAX_ENCODED_LEN>(
+pub(crate) fn assert_receipt_rlp_equals<let MAX_ENCODED_LEN: u32>(
     is_pre_byzantium: bool,
     receipt_rlp: Fragment<MAX_ENCODED_LEN, u8>,
     receipt: TxReceiptPartial

@@ -7,7 +7,7 @@ use crate::rlp::{types::RlpFragment, decode::decode_string};
 global KEY_NIBBLE_LEN = 6;
 global MAX_TX_IDX_BYTES_LEN = 2;
 
-pub fn assert_tx_idx_equals<MAX_KEY_LEN>(key_as_rlp: Fragment<MAX_KEY_LEN, u8>, tx_idx: Field) {
+pub fn assert_tx_idx_equals<let MAX_KEY_LEN: u32>(key_as_rlp: Fragment<MAX_KEY_LEN, u8>, tx_idx: Field) {
     let RlpFragment { offset, length, data_type: _ } = decode_string(key_as_rlp);
     assert(offset + length == key_as_rlp.length, "Key is not an rlp-encoded string");
 

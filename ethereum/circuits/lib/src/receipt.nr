@@ -69,7 +69,7 @@ impl From<TxReceiptPartial> for ForeignCallTxReceiptPartial {
     }
 }
 
-type ProofInputSerialized<LEN> = [Field; LEN];
+type ProofInputSerialized<let LEN: u32> = [Field; LEN];
 
 struct TxReceiptWithinBlock {
     receipt: TxReceiptPartial,
@@ -91,7 +91,7 @@ pub fn get_receipt(chain_id: Field, block_number: u64, tx_idx: Field) -> TxRecei
 }
 
 #[oracle(get_receipt)]
-unconstrained fn get_receipt_oracle<PROOF_INPUT_LEN>(
+unconstrained fn get_receipt_oracle<let PROOF_INPUT_LEN: u32>(
     _chain_id: Field,
     _block_number: u64,
     _tx_idx: Field
@@ -115,7 +115,7 @@ unconstrained pub(crate) fn get_receipt_unconstrained_M(
     (tx_type, receipt, proof_input)
 }
 
-pub(crate) fn receipt_rlp_from_proof<MAX_VALUE_LEN, MAX_LEAF_LEN>(
+pub(crate) fn receipt_rlp_from_proof<let MAX_VALUE_LEN: u32, let MAX_LEAF_LEN: u32>(
     tx_type: TxType,
     receipt_proof_input: ProofInput<MAX_PREFIXED_KEY_NIBBLE_LEN, MAX_VALUE_LEN, MAX_DEPTH_NO_LEAF, MAX_LEAF_LEN>
 ) -> Fragment<MAX_VALUE_LEN, u8> {

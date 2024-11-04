@@ -6,7 +6,7 @@ use crate::misc::fragment::Fragment;
 // This means that this library can only decode RLP entities with a length of up to 2^16 - 1 bytes.
 global MAX_LEN_IN_BYTES: u64 = 2;
 
-pub fn extract_payload_len<N>(data: Fragment<N, u8>, lenlen: u64) -> u64 {
+pub fn extract_payload_len<let N: u32>(data: Fragment<N, u8>, lenlen: u64) -> u64 {
     assert(lenlen <= MAX_LEN_IN_BYTES, "Length of length exceeds maximum");
     assert(lenlen <= data.length, "Length of length exceeds input length");
     assert(lenlen != 0, "Length of length is zero");
@@ -22,7 +22,7 @@ pub fn extract_payload_len<N>(data: Fragment<N, u8>, lenlen: u64) -> u64 {
     payload_length
 }
 
-pub fn decode_to_rlp_header<N>(data: Fragment<N, u8>) -> RlpHeader {
+pub fn decode_to_rlp_header<let N: u32>(data: Fragment<N, u8>) -> RlpHeader {
     let mut data = data;
     let prefix = data.pop_front();
 
@@ -55,7 +55,7 @@ pub fn decode_to_rlp_header<N>(data: Fragment<N, u8>) -> RlpHeader {
     }
 }
 
-pub fn decode_string<N>(input: Fragment<N, u8>) -> RlpFragment {
+pub fn decode_string<let N: u32>(input: Fragment<N, u8>) -> RlpFragment {
     let mut RlpHeader {offset, length, data_type} = decode_to_rlp_header(input);
     assert(data_type == STRING, "Wrong data type");
 
@@ -66,7 +66,7 @@ pub fn decode_string<N>(input: Fragment<N, u8>) -> RlpFragment {
 }
 
 // Strings are decoded and offsets point to the start of raw values, while list offsets point to the start of the RLP header.
-pub fn decode_list<N, MAX_FIELDS>(data: Fragment<N, u8>) -> RlpList<MAX_FIELDS> {
+pub fn decode_list<let N: u32, let MAX_FIELDS: u32>(data: Fragment<N, u8>) -> RlpList<MAX_FIELDS> {
     let mut rlp_list: RlpList<MAX_FIELDS> = BoundedVec::new();
 
     let RlpHeader {offset, length, data_type} = decode_to_rlp_header(data);
@@ -101,7 +101,7 @@ pub fn decode_list<N, MAX_FIELDS>(data: Fragment<N, u8>) -> RlpList<MAX_FIELDS> 
 }
 
 // The version of decode_list that is cheaper to call, but only works for lists of small strings (<= 55 bytes).
-pub fn decode_list_of_small_strings<N, NUM_FIELDS>(data: Fragment<N, u8>) -> RlpList<NUM_FIELDS> {
+pub fn decode_list_of_small_strings<let N: u32, let NUM_FIELDS: u32>(data: Fragment<N, u8>) -> RlpList<NUM_FIELDS> {
     let mut rlp_list: RlpList<NUM_FIELDS> = BoundedVec::new();
 
     let RlpHeader {offset, length, data_type} = decode_to_rlp_header(data);

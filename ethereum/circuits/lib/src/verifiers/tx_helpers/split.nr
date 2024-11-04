@@ -1,6 +1,6 @@
 use crate::misc::fragment::Fragment;
 
-pub(crate) fn split_into_tx_type_and_rlp<MAX_ENCODED_LEN>(
+pub(crate) fn split_into_tx_type_and_rlp<let MAX_ENCODED_LEN: u32>(
     is_legacy: bool,
     encoded: Fragment<MAX_ENCODED_LEN, u8>
 ) -> (u8, Fragment<MAX_ENCODED_LEN, u8>) {
